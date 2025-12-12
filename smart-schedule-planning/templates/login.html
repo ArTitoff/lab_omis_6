@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-header">
+            <h1><i class="fas fa-calendar-alt"></i> Умное планирование</h1>
+            <p class="auth-subtitle">Система управления временем и расписанием</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form">
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-input" 
+                       placeholder="ivan.petrov@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password" class="form-label">Пароль</label>
+                <input type="password" id="password" name="password" class="form-input" 
+                       placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg auth-btn">
+                <i class="fas fa-sign-in-alt"></i> Войти
+            </button>
+        </form>
+        
+        <div class="auth-divider">
+            <span>или</span>
+        </div>
+        
+        <div class="auth-actions">
+            <p>Нет аккаунта? <a href="{{ url_for('auth.register') }}">Зарегистрироваться</a></p>
+            <p>Для демо-тестирования используйте:</p>
+            <ul class="demo-accounts">
+                <li><strong>Email:</strong> user@example.com</li>
+                <li><strong>Пароль:</strong> password123</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

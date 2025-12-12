@@ -1,0 +1,87 @@
+<!-- templates/task_edit.html -->
+{% extends "base.html" %}
+
+{% block title %}Редактировать задачу{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>Редактировать задачу</h1>
+        <p class="page-subtitle">Внесите изменения в задачу "{{ task.title }}"</p>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('task.edit_task', task_id=task.id) }}" class="task-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="title" class="form-label">Название задачи *</label>
+                        <input type="text" id="title" name="title" class="form-input" 
+                               value="{{ task.title }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="priority" class="form-label">Приоритет</label>
+                        <select id="priority" name="priority" class="form-input">
+                            <option value="низкий" {% if task.priority == 'низкий' %}selected{% endif %}>Низкий</option>
+                            <option value="средний" {% if task.priority == 'средний' %}selected{% endif %}>Средний</option>
+                            <option value="высокий" {% if task.priority == 'высокий' %}selected{% endif %}>Высокий</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description" class="form-label">Описание</label>
+                    <textarea id="description" name="description" class="form-input" 
+                              rows="3">{{ task.description or '' }}</textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="deadline" class="form-label">Дедлайн</label>
+                        <input type="date" id="deadline" name="deadline" class="form-input"
+                               value="{{ task.deadline[:10] if task.deadline else '' }}">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="duration" class="form-label">Продолжительность (минуты)</label>
+                        <input type="number" id="duration" name="duration" class="form-input" 
+                               value="{{ task.duration }}" min="15" step="15">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status" class="form-label">Статус</label>
+                    <select id="status" name="status" class="form-input">
+                        <option value="новая" {% if task.status == 'новая' %}selected{% endif %}>Новая</option>
+                        <option value="в работе" {% if task.status == 'в работе' %}selected{% endif %}>В работе</option>
+                        <option value="завершена" {% if task.status == 'завершена' %}selected{% endif %}>Завершена</option>
+                    </select>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="{{ url_for('task.task_detail', task_id=task.id) }}" class="btn btn-outline">
+                        Отмена
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Сохранить изменения
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Устанавливаем минимальную дату - сегодня
+    const today = new Date().toISOString().split('T')[0];
+    const deadlineInput = document.getElementById('deadline');
+    if (deadlineInput) {
+        deadlineInput.min = today;
+    }
+});
+</script>
+{% endblock %}

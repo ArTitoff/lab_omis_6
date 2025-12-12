@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Умное планирование - {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        {% if 'user_id' in session %}
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-calendar-alt"></i>
+                <h2>Умное расписание</h2>
+            </div>
+            
+            <div class="user-info">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <span class="user-name">{{ session.get('user_name', 'Пользователь') }}</span>
+                    <span class="user-email">{{ session.get('user_email', '') }}</span>
+                </div>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Главная
+                </a></li>
+                <li><a href="{{ url_for('task.task_list') }}" class="nav-link {% if request.endpoint.startswith('task.') %}active{% endif %}">
+                    <i class="fas fa-tasks"></i> Задачи
+                </a></li>
+                <li><a href="{{ url_for('calendar.calendar_view') }}" class="nav-link {% if request.endpoint.startswith('calendar.') %}active{% endif %}">
+                    <i class="fas fa-calendar"></i> Календарь
+                </a></li>
+                <li><a href="{{ url_for('collaborative') }}" class="nav-link {% if request.endpoint == 'collaborative' %}active{% endif %}">
+                    <i class="fas fa-users"></i> Совместное
+                </a></li>
+                <li><a href="{{ url_for('reports') }}" class="nav-link {% if request.endpoint == 'reports' %}active{% endif %}">
+                    <i class="fas fa-chart-bar"></i> Отчеты
+                </a></li>
+                <li><a href="{{ url_for('notifications') }}" class="nav-link {% if request.endpoint == 'notifications' %}active{% endif %}">
+                    <i class="fas fa-bell"></i> Уведомления
+                </a></li>
+                <li><a href="{{ url_for('settings') }}" class="nav-link {% if request.endpoint == 'settings' %}active{% endif %}">
+                    <i class="fas fa-cog"></i> Настройки
+                </a></li>
+            </ul>
+            
+            <div class="nav-footer">
+                <a href="{{ url_for('auth.logout') }}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Выход
+                </a>
+            </div>
+        </nav>
+        {% endif %}
+        
+        <main class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

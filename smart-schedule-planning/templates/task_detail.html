@@ -1,0 +1,168 @@
+<!-- task_detail.html -->
+{% extends "base.html" %}
+
+{% block title %}{{ task.title }}{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <div class="page-header-row">
+            <h1>{{ task.title }}</h1>
+            <div class="page-actions">
+                <a href="{{ url_for('task.edit_task', task_id=task.id) }}" 
+                class="btn btn-outline">
+                    <i class="fas fa-edit"></i> Редактировать
+                </a>
+                {% if task.status != 'завершена' %}
+                <button type="button" class="btn btn-primary" 
+                        onclick="completeTask({{ task.id }})">
+                    <i class="fas fa-check"></i> Завершить
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-primary" disabled>
+                    <i class="fas fa-check"></i> Завершено
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        <div class="task-meta">
+            <span class="badge priority-{{ task.priority }}">{{ task.priority }}</span>
+            <span class="status status-{{ task.status }}">{{ task.status }}</span>
+            {% if task.deadline %}
+            <span class="deadline">
+                <i class="fas fa-clock"></i> 
+                {{ task.deadline|datetime_format('%d.%m.%Y %H:%M') }}
+            </span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="task-details-grid">
+        <div class="card">
+            <div class="card-header">
+                <h3>Детали задачи</h3>
+            </div>
+            <div class="card-body">
+                <div class="detail-section">
+                    <h4>Описание</h4>
+                    <p>{{ task.description or 'Нет описания' }}</p>
+                </div>
+                
+                <div class="detail-row">
+                    <div class="detail-item">
+                        <span class="detail-label">Создано:</span>
+                        <span class="detail-value">{{ task.created_at|datetime_format('%d.%m.%Y %H:%M') }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Обновлено:</span>
+                        <span class="detail-value">{{ task.updated_at|datetime_format('%d.%m.%Y %H:%M') }}</span>
+                    </div>
+                </div>
+                
+                {% if task.deadline %}
+                <div class="detail-row">
+                    <div class="detail-item">
+                        <span class="detail-label">Дедлайн:</span>
+                        <span class="detail-value">
+                            {{ task.deadline|datetime_format('%d.%m.%Y %H:%M') }}
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if task.start_time %}
+                <div class="detail-row">
+                    <div class="detail-item">
+                        <span class="detail-label">Начало:</span>
+                        <span class="detail-value">
+                            {{ task.start_time|datetime_format('%d.%m.%Y %H:%M') }}
+                        </span>
+                    </div>
+                    {% if task.end_time %}
+                    <div class="detail-item">
+                        <span class="detail-label">Окончание:</span>
+                        <span class="detail-value">
+                            {{ task.end_time|datetime_format('%d.%m.%Y %H:%M') }}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <div class="detail-item">
+                    <span class="detail-label">Продолжительность:</span>
+                    <span class="detail-value">{{ task.duration }} минут</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h3>Действия</h3>
+            </div>
+            <div class="card-body">
+                <div class="action-buttons">
+                    {% if task.status != 'завершена' %}
+                    <button type="button" class="btn btn-outline btn-block" 
+                            onclick="startTask({{ task.id }})">
+                        <i class="fas fa-play"></i> Начать задачу
+                    </button>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('calendar.calendar_view', date=task.deadline[:10] if task.deadline else '') }}" 
+                       class="btn btn-outline btn-block">
+                        <i class="fas fa-calendar"></i> Открыть в календаре
+                    </a>
+                    
+                    <form method="POST" action="{{ url_for('task.delete_task', task_id=task.id) }}" 
+                          class="delete-form" onsubmit="return confirm('Удалить задачу?')">
+                        <button type="submit" class="btn btn-danger btn-block">
+                            <i class="fas fa-trash"></i> Удалить задачу
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function completeTask(taskId) {
+    fetch('/tasks/' + taskId + '/complete', {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Ошибка: ' + data.error);
+        }
+    });
+}
+
+function startTask(taskId) {
+    const now = new Date().toISOString();
+    
+    fetch('/tasks/' + taskId + '/start', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            start_time: now
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Ошибка: ' + data.error);
+        }
+    });
+}
+</script>
+{% endblock %}

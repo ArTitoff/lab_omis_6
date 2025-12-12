@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{{ template|replace('.html', '')|title }}{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h1>{{ template|replace('.html', '')|replace('_', ' ')|title }}</h1>
+        <p class="page-subtitle">Страница в разработке</p>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <p>Эта функциональность будет реализована в ближайшее время.</p>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> Вернуться на главную
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

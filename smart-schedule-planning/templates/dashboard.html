@@ -1,0 +1,117 @@
+<!-- dashboard.html - обновленный -->
+{% extends "base.html" %}
+
+{% block title %}Главная панель{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1>Главная панель</h1>
+        <p class="welcome-message">
+            Добро пожаловать, {{ user_name }}! 👋
+        </p>
+        <div class="current-date">
+            {{ current_date|default('', true) }}
+        </div>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon total">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats.total|default(0) }}</div>
+                <div class="stat-label">Всего задач</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon completed">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats.completed|default(0) }}</div>
+                <div class="stat-label">Завершено</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon progress">
+                <i class="fas fa-spinner"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats.in_progress|default(0) }}</div>
+                <div class="stat-label">В работе</div>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon new">
+                <i class="fas fa-plus-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats.new|default(0) }}</div>
+                <div class="stat-label">Новые</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-content">
+        <div class="card">
+            <div class="card-header">
+                <h2>Ближайшие задачи</h2>
+                <a href="{{ url_for('task.task_list') }}" class="btn btn-outline btn-sm">
+                    Все задачи
+                </a>
+            </div>
+            <div class="card-body">
+                {% if upcoming_tasks %}
+                    {% for task in upcoming_tasks %}
+                    <div class="task-item">
+                        <div class="task-title">{{ task.title }}</div>
+                        <div class="task-meta">
+                            <span class="badge priority-{{ task.priority }}">{{ task.priority }}</span>
+                            <span class="deadline">{{ task.deadline|datetime_format if task.deadline else 'Нет дедлайна' }}</span>
+                            <span class="status status-{{ task.status }}">{{ task.status }}</span>
+                        </div>
+                        <div class="task-actions">
+                            <a href="{{ url_for('task.task_detail', task_id=task.id) }}" 
+                               class="btn btn-xs btn-outline">Просмотр</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">Нет ближайших задач</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2>Быстрые действия</h2>
+            </div>
+            <div class="card-body">
+                <div class="quick-actions">
+                    <a href="{{ url_for('task.create_task') }}" class="quick-action-btn">
+                        <i class="fas fa-plus"></i>
+                        <span>Создать задачу</span>
+                    </a>
+                    <a href="{{ url_for('calendar.calendar_view') }}" class="quick-action-btn">
+                        <i class="fas fa-calendar"></i>
+                        <span>Открыть календарь</span>
+                    </a>
+                    <a href="{{ url_for('planning.collaborative') }}" class="quick-action-btn">
+                        <i class="fas fa-users"></i>
+                        <span>Создать встречу</span>
+                    </a>
+                    <a href="{{ url_for('report.reports') }}" class="quick-action-btn">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Посмотреть отчеты</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
